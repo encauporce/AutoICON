@@ -1,14 +1,14 @@
 /*
     Auto-Hiding Desktop Icons (Explorer Restart Edition)
 
-    [¹¦ÄÜ¸üĞÂ]
-    - ÍË³öÁ÷³ÌÖØ¹¹£º¸´Ô­×´Ì¬ -> É±µôExplorer -> ÖØÆôExplorer -> ÍË³ö±¾³ÌĞò
-    - ³¹µ×½â¾öÍË³öºóÍ¼±êÏûÊ§»òÎŞ·¨µã»÷µÄBug
-    - ±£³ÖÁËÖ®Ç°µÄÅäÖÃÎÄ¼şºÍ×¢²á±í¼ÇÒä¹¦ÄÜ
+    [åŠŸèƒ½æ›´æ–°]
+    - é€€å‡ºæµç¨‹é‡æ„ï¼šå¤åŸçŠ¶æ€ -> æ€æ‰Explorer -> é‡å¯Explorer -> é€€å‡ºæœ¬ç¨‹åº
+    - å½»åº•è§£å†³é€€å‡ºåå›¾æ ‡æ¶ˆå¤±æˆ–æ— æ³•ç‚¹å‡»çš„Bug
+    - ä¿æŒäº†ä¹‹å‰çš„é…ç½®æ–‡ä»¶å’Œæ³¨å†Œè¡¨è®°å¿†åŠŸèƒ½
 
-    [±àÒëÖ¸ÄÏ]
+    [ç¼–è¯‘æŒ‡å—]
     - Visual Studio: Windows Desktop Application (C++)
-    - ÒÀÀµ¿â: dwmapi.lib, shell32.lib, advapi32.lib
+    - ä¾èµ–åº“: dwmapi.lib, shell32.lib, advapi32.lib
 */
 
 #define WIN32_LEAN_AND_MEAN
@@ -17,7 +17,7 @@
 #include <shellapi.h>
 #include <tchar.h>
 #include <math.h>
-#include <tlhelp32.h> // ÓÃÓÚ½ø³Ì¿ìÕÕ
+#include <tlhelp32.h> // ç”¨äºè¿›ç¨‹å¿«ç…§
 
 #pragma comment(lib, "dwmapi.lib")
 #pragma comment(lib, "user32.lib")
@@ -26,7 +26,7 @@
 #pragma comment(lib, "advapi32.lib")
 
 // ==========================================
-// === ÅäÖÃÎÄ¼ş¶¨Òå ===
+// === é…ç½®æ–‡ä»¶å®šä¹‰ ===
 // ==========================================
 
 struct ConfigProfile {
@@ -40,19 +40,19 @@ struct ConfigProfile {
 };
 
 const ConfigProfile PRESETS[] = {
-    { _T("Ä¬ÈÏ"), 5000, 200, 0.0f, 0.0f, 16.0f, 128.0f },
-    { _T("¿ìËÙ"), 3000, 100, 0.0f, 0.0f, 32.0f, 4096.0f },
-    { _T("Ä¬ÈÏ»¬¶¯"), 8000, 200, 12.0f, 512.0f, 4.0f, 1024.0f },
-    { _T("¿ìËÙ»¬¶¯"), 5000, 100, 24.0f, 1024.0f, 8.0f, 1024.0f },
-    { _T("Ä¬ÈÏ³éÌë"), 10000, 200, 16.0f, 2048.0f, 0.0f, 0.0f },
-    { _T("¿ìËÙ³éÌë"), 6000, 100, 28.0f, 8192.0f, 0.0f, 0.0f },
-    { _T("ÔİÍ£Òş²Ø (³£ÏÔ)"), 0xFFFFFFFF, 1000, 20.0f, 3000.0f, 20.0f, 1000.0f }
+    { _T("é»˜è®¤"), 5000, 200, 0.0f, 0.0f, 16.0f, 128.0f },
+    { _T("å¿«é€Ÿ"), 3000, 100, 0.0f, 0.0f, 32.0f, 4096.0f },
+    { _T("é»˜è®¤æ»‘åŠ¨"), 8000, 200, 12.0f, 512.0f, 4.0f, 1024.0f },
+    { _T("å¿«é€Ÿæ»‘åŠ¨"), 5000, 100, 24.0f, 1024.0f, 8.0f, 1024.0f },
+    { _T("é»˜è®¤æŠ½å±‰"), 10000, 200, 16.0f, 2048.0f, 0.0f, 0.0f },
+    { _T("å¿«é€ŸæŠ½å±‰"), 6000, 100, 28.0f, 8192.0f, 0.0f, 0.0f },
+    { _T("æš‚åœéšè— (å¸¸æ˜¾)"), 0xFFFFFFFF, 1000, 20.0f, 3000.0f, 20.0f, 1000.0f }
 };
 
 const int PRESET_COUNT = sizeof(PRESETS) / sizeof(PRESETS[0]);
 
 // ==========================================
-// === È«¾Ö±äÁ¿ ===
+// === å…¨å±€å˜é‡ ===
 // ==========================================
 
 #define WM_TRAYICON (WM_USER + 1)
@@ -92,7 +92,7 @@ LARGE_INTEGER qpcLastTime;
 const int MOUSE_MOVE_THRESHOLD = 2;
 
 // ---------------------------------------------------------
-// ×¢²á±í²Ù×÷
+// æ³¨å†Œè¡¨æ“ä½œ
 // ---------------------------------------------------------
 void SaveConfigIndex(int index) {
     HKEY hKey;
@@ -115,7 +115,7 @@ int LoadConfigIndex() {
 }
 
 // ---------------------------------------------------------
-// ´°¿Ú¹ÜÀí
+// çª—å£ç®¡ç†
 // ---------------------------------------------------------
 BOOL CALLBACK FindSysListViewProc(HWND hwnd, LPARAM lParam) {
     HWND hShellView = FindWindowEx(hwnd, NULL, _T("SHELLDLL_DefView"), NULL);
@@ -168,21 +168,21 @@ void LocateDesktop() {
 }
 
 // ---------------------------------------------------------
-// [ºËĞÄĞŞ¸´] ÍË³öÁ÷³Ì£ºÖØÖÃ -> É±Explorer -> ÆôExplorer
+// [æ ¸å¿ƒä¿®å¤] é€€å‡ºæµç¨‹ï¼šé‡ç½® -> æ€Explorer -> å¯Explorer
 // ---------------------------------------------------------
 void PerformExitSequence() {
-    // 1. ³¢ÊÔÊÖ¶¯ÖØÖÃÍ¼±ê×´Ì¬ (ËäÈ»ÖØÆôExplorer»á¸²¸ÇÕâ¸ö£¬µ«×÷Îª±£ÏÕ)
+    // 1. å°è¯•æ‰‹åŠ¨é‡ç½®å›¾æ ‡çŠ¶æ€ (è™½ç„¶é‡å¯Explorerä¼šè¦†ç›–è¿™ä¸ªï¼Œä½†ä½œä¸ºä¿é™©)
     if (g.hContainer && IsWindow(g.hContainer)) {
         SetLayeredWindowAttributes(g.hContainer, 0, 255, LWA_ALPHA);
         EnableLayeredStyle(g.hContainer, false);
         SetWindowPos(g.hContainer, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
     }
 
-    // 2. ÇåÀíÍĞÅÌÍ¼±ê (·ÀÖ¹²ĞÁô)
+    // 2. æ¸…ç†æ‰˜ç›˜å›¾æ ‡ (é˜²æ­¢æ®‹ç•™)
     Shell_NotifyIcon(NIM_DELETE, &nid);
 
-    // 3. ²éÕÒ²¢½áÊø Explorer.exe ½ø³Ì
-    // Í¨³£ Progman »ò Shell_TrayWnd µÄËùÓĞÕß¾ÍÊÇÎÒÃÇÒªÕÒµÄ explorer
+    // 3. æŸ¥æ‰¾å¹¶ç»“æŸ Explorer.exe è¿›ç¨‹
+    // é€šå¸¸ Progman æˆ– Shell_TrayWnd çš„æ‰€æœ‰è€…å°±æ˜¯æˆ‘ä»¬è¦æ‰¾çš„ explorer
     DWORD pid = 0;
     HWND hShellWnd = FindWindow(_T("Progman"), NULL);
     if (!hShellWnd) hShellWnd = FindWindow(_T("Shell_TrayWnd"), NULL);
@@ -192,22 +192,22 @@ void PerformExitSequence() {
         if (pid != 0) {
             HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, pid);
             if (hProcess) {
-                // Ç¿ÖÆÖÕÖ¹
+                // å¼ºåˆ¶ç»ˆæ­¢
                 TerminateProcess(hProcess, 1);
                 CloseHandle(hProcess);
-                // µÈ´ı½ø³ÌÍêÈ«ÊÍ·Å
+                // ç­‰å¾…è¿›ç¨‹å®Œå…¨é‡Šæ”¾
                 Sleep(500);
             }
         }
     }
 
-    // 4. ÖØĞÂÆô¶¯ Explorer.exe
-    // Õâ½«´´½¨Ò»¸öÈ«ĞÂµÄ×ÀÃæ»·¾³£¬È·±£Í¼±ê¾ø¶Ô¿É¼ûÇÒÎ»ÖÃÕıÈ·
+    // 4. é‡æ–°å¯åŠ¨ Explorer.exe
+    // è¿™å°†åˆ›å»ºä¸€ä¸ªå…¨æ–°çš„æ¡Œé¢ç¯å¢ƒï¼Œç¡®ä¿å›¾æ ‡ç»å¯¹å¯è§ä¸”ä½ç½®æ­£ç¡®
     ShellExecute(NULL, _T("open"), _T("explorer.exe"), NULL, NULL, SW_SHOWDEFAULT);
 }
 
 // ---------------------------------------------------------
-// ÍĞÅÌÓë²Ëµ¥
+// æ‰˜ç›˜ä¸èœå•
 // ---------------------------------------------------------
 void InitTrayIcon(HWND hwnd) {
     memset(&nid, 0, sizeof(nid));
@@ -217,7 +217,7 @@ void InitTrayIcon(HWND hwnd) {
     nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
     nid.uCallbackMessage = WM_TRAYICON;
     nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    _tcscpy_s(nid.szTip, _T("×ÀÃæÍ¼±ê×Ô¶¯Òş²Ø"));
+    _tcscpy_s(nid.szTip, _T("æ¡Œé¢å›¾æ ‡è‡ªåŠ¨éšè—"));
     Shell_NotifyIcon(NIM_ADD, &nid);
 }
 
@@ -233,16 +233,16 @@ void ShowTrayMenu(HWND hwnd) {
         AppendMenu(hSubMenu, flags, ID_PROFILE_START + i, PRESETS[i].name);
     }
 
-    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, _T("ÇĞ»»Ä£Ê½"));
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, _T("åˆ‡æ¢æ¨¡å¼"));
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
-    AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, _T("ÍêÈ«ÍË³ö²¢ÖØÖÃ"));
+    AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, _T("å®Œå…¨é€€å‡ºå¹¶é‡ç½®"));
 
     TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hwnd, NULL);
     DestroyMenu(hMenu);
 }
 
 // ---------------------------------------------------------
-// ÎïÀíÒıÇæ
+// ç‰©ç†å¼•æ“
 // ---------------------------------------------------------
 void TimerInit() {
     QueryPerformanceFrequency(&qpcFreq);
@@ -261,7 +261,7 @@ float TimerGetDelta() {
 void UpdatePhysics(float dt) {
     if (!g.hContainer) return;
 
-    // YÖá
+    // Yè½´
     float diffY = g.targetY - g.currentY;
     if (fabs(diffY) > 0.1f || fabs(g.velocityY) > 0.1f) {
         if (g.targetY > g.currentY) {
@@ -316,7 +316,7 @@ bool IsPhysicsIdle() {
 }
 
 // ---------------------------------------------------------
-// ÏûÏ¢´¦Àí
+// æ¶ˆæ¯å¤„ç†
 // ---------------------------------------------------------
 bool IsMouseOnDesktop() {
     POINT pt; GetCursorPos(&pt);
@@ -371,7 +371,7 @@ void CreateMessageWindow(HINSTANCE hInstance) {
 }
 
 // ---------------------------------------------------------
-// Ö÷Èë¿Ú
+// ä¸»å…¥å£
 // ---------------------------------------------------------
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ LPWSTR lpCmdLine, _In_ int nShow) {
     HANDLE hMutex = CreateMutex(NULL, TRUE, _T("Local\\DH_RebootFix_Instance"));
@@ -390,7 +390,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
     SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 
     if (!g.hContainer) {
-        MessageBox(NULL, _T("×ÀÃæÎ´ÕÒµ½"), _T("Error"), MB_ICONERROR);
+        MessageBox(NULL, _T("æ¡Œé¢æœªæ‰¾åˆ°"), _T("Error"), MB_ICONERROR);
         Shell_NotifyIcon(NIM_DELETE, &nid);
         return 1;
     }
@@ -451,7 +451,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
         }
     }
 
-    // [ÕâÀï] Ö´ĞĞÍË³öĞòÁĞ
+    // [è¿™é‡Œ] æ‰§è¡Œé€€å‡ºåºåˆ—
     PerformExitSequence();
 
     CloseHandle(hMutex);
