@@ -1,9 +1,9 @@
 /*
     Auto-Hiding Desktop Icons (Win32 API + Tray + Non-linear Fade)
 
-    [±àÒëÖ¸ÄÏ]
-    1. ÏîÄ¿ÀàĞÍ: Windows Desktop Application (C++)
-    2. ÒÀÀµ¿â: dwmapi.lib, shell32.lib (VSÍ¨³£×Ô¶¯Á´½Ó)
+    [ç¼–è¯‘æŒ‡å—]
+    1. é¡¹ç›®ç±»å‹: Windows Desktop Application (C++)
+    2. ä¾èµ–åº“: dwmapi.lib, shell32.lib (VSé€šå¸¸è‡ªåŠ¨é“¾æ¥)
 */
 
 #define WIN32_LEAN_AND_MEAN
@@ -19,57 +19,57 @@
 #pragma comment(lib, "shell32.lib")
 
 // ==========================================
-// === ¿ª·¢ÕßÅäÖÃÇøÓò (CONSTANTS) ===
+// === å¼€å‘è€…é…ç½®åŒºåŸŸ (CONSTANTS) ===
 // ==========================================
 
-// --- »ù´¡ÉèÖÃ ---
-const DWORD HIDE_DELAY_MS = 5000;          // Êó±ê¾²Ö¹¶à¾ÃºóÒş²Ø (ºÁÃë)
-const DWORD IDLE_CHECK_INTERVAL_MS = 100;  // ½ÚÄÜÄ£Ê½ÏÂµÄ¼ì²âÖÜÆÚ
-const int   MOUSE_MOVE_THRESHOLD = 2;      // Êó±êÒÆ¶¯¼ì²âÁéÃô¶È
+// --- åŸºç¡€è®¾ç½® ---
+const DWORD HIDE_DELAY_MS = 5000;          // é¼ æ ‡é™æ­¢å¤šä¹…åéšè— (æ¯«ç§’)
+const DWORD IDLE_CHECK_INTERVAL_MS = 100;  // èŠ‚èƒ½æ¨¡å¼ä¸‹çš„æ£€æµ‹å‘¨æœŸ
+const int   MOUSE_MOVE_THRESHOLD = 2;      // é¼ æ ‡ç§»åŠ¨æ£€æµ‹çµæ•åº¦
 
-// --- Î»ÖÃ¶¯»­ÉèÖÃ (»¬Èë/»¬³ö) ---
-// »¬Èë(ÏÔÊ¾)µÄ×èÄáÏµÊı£ºÊıÖµÔ½´ó£¬»Øµ¯¸´Î»Ô½¿ì (½¨Òé 5.0 - 15.0)
+// --- ä½ç½®åŠ¨ç”»è®¾ç½® (æ»‘å…¥/æ»‘å‡º) ---
+// æ»‘å…¥(æ˜¾ç¤º)çš„é˜»å°¼ç³»æ•°ï¼šæ•°å€¼è¶Šå¤§ï¼Œå›å¼¹å¤ä½è¶Šå¿« (å»ºè®® 5.0 - 15.0)
 const float POS_SPEED_IN_FACTOR = 0.0f;
-// »¬³ö(Òş²Ø)µÄ¼ÓËÙ¶È£ºÊıÖµÔ½´ó£¬µôÂäÔ½¿ì (½¨Òé 2000.0 - 5000.0)
+// æ»‘å‡º(éšè—)çš„åŠ é€Ÿåº¦ï¼šæ•°å€¼è¶Šå¤§ï¼Œæ‰è½è¶Šå¿« (å»ºè®® 2000.0 - 5000.0)
 const float POS_ACCEL_OUT_PPS2 = 0.0f;
 
-// --- [ĞÂÔö] Í¸Ã÷¶È¶¯»­ÉèÖÃ (µ­Èë/µ­³ö) ---
-// µ­Èë(ÏÔÊ¾)µÄ×èÄáÏµÊı£ºÊıÖµÔ½´ó£¬¸¡ÏÖÔ½¿ì (½¨Òé 3.0 - 10.0)
+// --- [æ–°å¢] é€æ˜åº¦åŠ¨ç”»è®¾ç½® (æ·¡å…¥/æ·¡å‡º) ---
+// æ·¡å…¥(æ˜¾ç¤º)çš„é˜»å°¼ç³»æ•°ï¼šæ•°å€¼è¶Šå¤§ï¼Œæµ®ç°è¶Šå¿« (å»ºè®® 3.0 - 10.0)
 const float ALPHA_SPEED_IN_FACTOR = 16.0f;
-// µ­³ö(Òş²Ø)µÄ¼ÓËÙ¶È£ºÊıÖµÔ½´ó£¬ÏûÊ§Ô½¿ì (½¨Òé 100.0 - 1000.0)
-// ×¢Òâ£ºÍ¸Ã÷¶ÈÖ»ÓĞ 0-255£¬¼ÓËÙ¶È²»ÒªÉèÌ«´ó£¬·ñÔòË²¼ä¾ÍÃ»ÁË
+// æ·¡å‡º(éšè—)çš„åŠ é€Ÿåº¦ï¼šæ•°å€¼è¶Šå¤§ï¼Œæ¶ˆå¤±è¶Šå¿« (å»ºè®® 100.0 - 1000.0)
+// æ³¨æ„ï¼šé€æ˜åº¦åªæœ‰ 0-255ï¼ŒåŠ é€Ÿåº¦ä¸è¦è®¾å¤ªå¤§ï¼Œå¦åˆ™ç¬é—´å°±æ²¡äº†
 const float ALPHA_ACCEL_OUT_PPS2 = 32.0f;
 
 // ==========================================
-// === ÍĞÅÌÍ¼±ê¶¨Òå ===
+// === æ‰˜ç›˜å›¾æ ‡å®šä¹‰ ===
 // ==========================================
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAY_EXIT 1001
 
-// È«¾Ö×´Ì¬
+// å…¨å±€çŠ¶æ€
 struct GlobalState {
     HWND hContainer;        // SHELLDLL_DefView
     HWND hListView;         // SysListView32
     HWND hWorkerW;          // WorkerW
-    HWND hMsgWindow;        // ÏûÏ¢½ÓÊÕ´°
+    HWND hMsgWindow;        // æ¶ˆæ¯æ¥æ”¶çª—
 
     int screenW;
     int screenH;
 
-    // Î»ÖÃÎïÀíÊôĞÔ
-    float currentY;         // 0.0 = ¶¥²¿, screenH = µ×²¿
+    // ä½ç½®ç‰©ç†å±æ€§
+    float currentY;         // 0.0 = é¡¶éƒ¨, screenH = åº•éƒ¨
     float targetY;
     float velocityY;
 
-    // [ĞÂÔö] Í¸Ã÷¶ÈÎïÀíÊôĞÔ
-    float currentAlpha;     // 0.0 = Í¸Ã÷, 255.0 = ²»Í¸Ã÷
+    // [æ–°å¢] é€æ˜åº¦ç‰©ç†å±æ€§
+    float currentAlpha;     // 0.0 = é€æ˜, 255.0 = ä¸é€æ˜
     float targetAlpha;
-    float velocityAlpha;    // Í¸Ã÷¶È±ä»¯ËÙ¶È
+    float velocityAlpha;    // é€æ˜åº¦å˜åŒ–é€Ÿåº¦
 
     POINT lastMousePos;
     DWORD lastActiveTime;
 
-    bool isHidden;          // Âß¼­×´Ì¬
+    bool isHidden;          // é€»è¾‘çŠ¶æ€
     bool appRunning;
 } g;
 
@@ -78,7 +78,7 @@ LARGE_INTEGER qpcFreq;
 LARGE_INTEGER qpcLastTime;
 
 // ---------------------------------------------------------
-// ÍĞÅÌÍ¼±ê
+// æ‰˜ç›˜å›¾æ ‡
 // ---------------------------------------------------------
 void InitTrayIcon(HWND hwnd) {
     nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -87,7 +87,7 @@ void InitTrayIcon(HWND hwnd) {
     nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
     nid.uCallbackMessage = WM_TRAYICON;
     nid.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    _tcscpy_s(nid.szTip, _T("×ÀÃæÍ¼±ê×Ô¶¯Òş²Ø¹¤¾ß"));
+    _tcscpy_s(nid.szTip, _T("æ¡Œé¢å›¾æ ‡è‡ªåŠ¨éšè—å·¥å…·"));
     Shell_NotifyIcon(NIM_ADD, &nid);
 }
 
@@ -96,7 +96,7 @@ void RemoveTrayIcon() {
 }
 
 // ---------------------------------------------------------
-// ºËĞÄÂß¼­º¯Êı
+// æ ¸å¿ƒé€»è¾‘å‡½æ•°
 // ---------------------------------------------------------
 BOOL CALLBACK FindSysListViewProc(HWND hwnd, LPARAM lParam) {
     HWND hShellView = FindWindowEx(hwnd, NULL, _T("SHELLDLL_DefView"), NULL);
@@ -112,7 +112,7 @@ BOOL CALLBACK FindSysListViewProc(HWND hwnd, LPARAM lParam) {
     return TRUE;
 }
 
-// ·Ö²ã´°¿Ú¿ØÖÆ (Í¸Ã÷¶ÈÖ§³Ö)
+// åˆ†å±‚çª—å£æ§åˆ¶ (é€æ˜åº¦æ”¯æŒ)
 void EnableLayeredStyle(HWND hwnd, bool enable) {
     if (!hwnd || !IsWindow(hwnd)) return;
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
@@ -145,12 +145,12 @@ void LocateDesktop() {
         g.screenH = rect.bottom - rect.top;
         if (g.screenH == 0) g.screenH = GetSystemMetrics(SM_CYSCREEN);
 
-        // ³õÊ¼»¯Î»ÖÃ
+        // åˆå§‹åŒ–ä½ç½®
         SetWindowPos(g.hContainer, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
         g.currentY = 0.0f;
         g.velocityY = 0.0f;
 
-        // ³õÊ¼»¯Í¸Ã÷¶È
+        // åˆå§‹åŒ–é€æ˜åº¦
         EnableLayeredStyle(g.hContainer, true);
         SetLayeredWindowAttributes(g.hContainer, 0, 255, LWA_ALPHA);
         g.currentAlpha = 255.0f;
@@ -161,14 +161,14 @@ void LocateDesktop() {
 void RestoreDesktop() {
     if (g.hContainer && IsWindow(g.hContainer)) {
         SetLayeredWindowAttributes(g.hContainer, 0, 255, LWA_ALPHA);
-        EnableLayeredStyle(g.hContainer, false); // ÒÆ³ıLayeredÊôĞÔ£¬·ÀÖ¹Bug
+        EnableLayeredStyle(g.hContainer, false); // ç§»é™¤Layeredå±æ€§ï¼Œé˜²æ­¢Bug
         SetWindowPos(g.hContainer, NULL, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
         InvalidateRect(g.hContainer, NULL, TRUE);
     }
 }
 
 // ---------------------------------------------------------
-// ÎïÀíÒıÇæ (ºËĞÄĞŞ¸Ä²¿·Ö)
+// ç‰©ç†å¼•æ“ (æ ¸å¿ƒä¿®æ”¹éƒ¨åˆ†)
 // ---------------------------------------------------------
 void TimerInit() {
     QueryPerformanceFrequency(&qpcFreq);
@@ -189,15 +189,15 @@ void UpdatePhysics(float dt) {
     bool needUpdateAlpha = false;
 
     // ---------------------------
-    // 1. Î»ÖÃÎïÀíÄ£Äâ (YÖá)
+    // 1. ä½ç½®ç‰©ç†æ¨¡æ‹Ÿ (Yè½´)
     // ---------------------------
     float diffY = g.targetY - g.currentY;
 
-    // Èç¹û»¹Ã»µ½Î»
+    // å¦‚æœè¿˜æ²¡åˆ°ä½
     if (fabs(diffY) > 0.5f || fabs(g.velocityY) > 1.0f) {
         needUpdatePos = true;
 
-        // »¬³ö (Hide): ¼ÓËÙÏòÏÂ
+        // æ»‘å‡º (Hide): åŠ é€Ÿå‘ä¸‹
         if (g.targetY > g.currentY) {
             g.velocityY += POS_ACCEL_OUT_PPS2 * dt;
             g.currentY += g.velocityY * dt;
@@ -206,10 +206,10 @@ void UpdatePhysics(float dt) {
                 g.velocityY = 0.0f;
             }
         }
-        // »¬Èë (Show): ×èÄáÏòÉÏ
+        // æ»‘å…¥ (Show): é˜»å°¼å‘ä¸Š
         else {
             float desiredSpeed = diffY * POS_SPEED_IN_FACTOR;
-            if (desiredSpeed > -50.0f) desiredSpeed = -50.0f; // ×îĞ¡³õËÙ¶È
+            if (desiredSpeed > -50.0f) desiredSpeed = -50.0f; // æœ€å°åˆé€Ÿåº¦
             g.currentY += desiredSpeed * dt;
             if (g.currentY < g.targetY) {
                 g.currentY = g.targetY;
@@ -217,22 +217,22 @@ void UpdatePhysics(float dt) {
         }
     }
     else {
-        g.currentY = g.targetY; // Ç¿ÖÆÎü¸½
+        g.currentY = g.targetY; // å¼ºåˆ¶å¸é™„
     }
 
     // ---------------------------
-    // 2. Í¸Ã÷¶ÈÎïÀíÄ£Äâ (Alpha)
+    // 2. é€æ˜åº¦ç‰©ç†æ¨¡æ‹Ÿ (Alpha)
     // ---------------------------
     float diffAlpha = g.targetAlpha - g.currentAlpha;
 
-    // Èç¹û»¹Ã»µ½Î» (Îó²îÔÊĞí·¶Î§ 0.5)
+    // å¦‚æœè¿˜æ²¡åˆ°ä½ (è¯¯å·®å…è®¸èŒƒå›´ 0.5)
     if (fabs(diffAlpha) > 0.5f || fabs(g.velocityAlpha) > 1.0f) {
         needUpdateAlpha = true;
 
-        // µ­³ö (Hide): Ä¿±êÊÇ0£¬µ±Ç°ÊÇ255 -> ÏòÏÂ¼ÓËÙ
+        // æ·¡å‡º (Hide): ç›®æ ‡æ˜¯0ï¼Œå½“å‰æ˜¯255 -> å‘ä¸‹åŠ é€Ÿ
         if (g.targetAlpha < g.currentAlpha) {
-            // ×¢Òâ£ºAlphaÊÇ¼õÉÙµÄ£¬ËùÒÔËÙ¶ÈÒ²ÊÇ³¯¸º·½ÏòÔö¼Ó
-            // ÎÒÃÇÈÃ velocityAlpha ±äÎªÕıÊı±íÊ¾¡°±ä»¯Á¿¡±£¬È»ºó¼õÈ¥
+            // æ³¨æ„ï¼šAlphaæ˜¯å‡å°‘çš„ï¼Œæ‰€ä»¥é€Ÿåº¦ä¹Ÿæ˜¯æœè´Ÿæ–¹å‘å¢åŠ 
+            // æˆ‘ä»¬è®© velocityAlpha å˜ä¸ºæ­£æ•°è¡¨ç¤ºâ€œå˜åŒ–é‡â€ï¼Œç„¶åå‡å»
             g.velocityAlpha += ALPHA_ACCEL_OUT_PPS2 * dt;
             g.currentAlpha -= g.velocityAlpha * dt;
 
@@ -241,11 +241,11 @@ void UpdatePhysics(float dt) {
                 g.velocityAlpha = 0.0f;
             }
         }
-        // µ­Èë (Show): Ä¿±êÊÇ255£¬µ±Ç°ÊÇ0 -> ×èÄá±Æ½ü
+        // æ·¡å…¥ (Show): ç›®æ ‡æ˜¯255ï¼Œå½“å‰æ˜¯0 -> é˜»å°¼é€¼è¿‘
         else {
-            // P¿ØÖÆÆ÷Âß¼­£º¾àÀëÔ½Ô¶±ä»¯Ô½¿ì
+            // Pæ§åˆ¶å™¨é€»è¾‘ï¼šè·ç¦»è¶Šè¿œå˜åŒ–è¶Šå¿«
             float speed = diffAlpha * ALPHA_SPEED_IN_FACTOR;
-            // ÏŞÖÆ×îĞ¡±ä»¯ËÙ¶È
+            // é™åˆ¶æœ€å°å˜åŒ–é€Ÿåº¦
             if (speed < 10.0f) speed = 10.0f;
 
             g.currentAlpha += speed * dt;
@@ -260,7 +260,7 @@ void UpdatePhysics(float dt) {
     }
 
     // ---------------------------
-    // 3. Ó¦ÓÃ±ä¸ü
+    // 3. åº”ç”¨å˜æ›´
     // ---------------------------
     if (g.hContainer) {
         if (needUpdatePos) {
@@ -268,7 +268,7 @@ void UpdatePhysics(float dt) {
                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
         }
         if (needUpdateAlpha) {
-            // °²È«ÏŞÖÆ 0-255
+            // å®‰å…¨é™åˆ¶ 0-255
             int finalAlpha = (int)g.currentAlpha;
             if (finalAlpha < 0) finalAlpha = 0;
             if (finalAlpha > 255) finalAlpha = 255;
@@ -279,14 +279,14 @@ void UpdatePhysics(float dt) {
 }
 
 bool IsPhysicsIdle() {
-    // Ö»ÓĞµ±Î»ÖÃºÍÍ¸Ã÷¶È¶¼ÍêÈ«Í£Ö¹Ê±£¬²ÅÈÏÎªÎïÀíÒıÇæ¿ÕÏĞ
+    // åªæœ‰å½“ä½ç½®å’Œé€æ˜åº¦éƒ½å®Œå…¨åœæ­¢æ—¶ï¼Œæ‰è®¤ä¸ºç‰©ç†å¼•æ“ç©ºé—²
     bool posIdle = (fabs(g.targetY - g.currentY) < 0.5f && fabs(g.velocityY) < 1.0f);
     bool alphaIdle = (fabs(g.targetAlpha - g.currentAlpha) < 0.5f && fabs(g.velocityAlpha) < 1.0f);
     return posIdle && alphaIdle;
 }
 
 // ---------------------------------------------------------
-// ¸¨ÖúÓë´°¿Ú¹ı³Ì
+// è¾…åŠ©ä¸çª—å£è¿‡ç¨‹
 // ---------------------------------------------------------
 bool IsMouseOnDesktop() {
     POINT pt;
@@ -307,7 +307,7 @@ LRESULT CALLBACK MsgWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             POINT p; GetCursorPos(&p);
             SetForegroundWindow(hwnd);
             HMENU hMenu = CreatePopupMenu();
-            AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, _T("ÍË³ö³ÌĞò"));
+            AppendMenu(hMenu, MF_STRING, ID_TRAY_EXIT, _T("é€€å‡ºç¨‹åº"));
             TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, p.x, p.y, 0, hwnd, NULL);
             DestroyMenu(hMenu);
         }
@@ -335,7 +335,7 @@ void CreateMessageWindow(HINSTANCE hInstance) {
 }
 
 // ---------------------------------------------------------
-// Ö÷Èë¿Ú
+// ä¸»å…¥å£
 // ---------------------------------------------------------
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ LPWSTR lpCmdLine, _In_ int nShow) {
     HANDLE hMutex = CreateMutex(NULL, TRUE, _T("Local\\MyDesktopHider_Instance"));
@@ -348,7 +348,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
     TimerInit();
 
     if (!g.hContainer) {
-        MessageBox(NULL, _T("ÎŞ·¨¶¨Î»×ÀÃæÍ¼±ê´°¿Ú¡£"), _T("´íÎó"), MB_ICONERROR);
+        MessageBox(NULL, _T("æ— æ³•å®šä½æ¡Œé¢å›¾æ ‡çª—å£ã€‚"), _T("é”™è¯¯"), MB_ICONERROR);
         RemoveTrayIcon();
         return 1;
     }
@@ -357,7 +357,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
     GetCursorPos(&g.lastMousePos);
     g.isHidden = false;
     g.targetY = 0.0f;
-    g.targetAlpha = 255.0f; // ³õÊ¼Ä¿±ê²»Í¸Ã÷
+    g.targetAlpha = 255.0f; // åˆå§‹ç›®æ ‡ä¸é€æ˜
 
     MSG msg;
     while (g.appRunning) {
@@ -382,7 +382,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
 
         if (isMoving && isOnDesktop) {
             g.lastActiveTime = currTime;
-            // [¶¯×÷£ºÏÔÊ¾]
+            // [åŠ¨ä½œï¼šæ˜¾ç¤º]
             g.targetY = 0.0f;
             g.targetAlpha = 255.0f;
             g.isHidden = false;
@@ -392,12 +392,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
         }
         else {
             if (!g.isHidden && (currTime - g.lastActiveTime > HIDE_DELAY_MS)) {
-                // [¶¯×÷£ºÒş²Ø]
+                // [åŠ¨ä½œï¼šéšè—]
                 g.targetY = (float)g.screenH;
                 g.targetAlpha = 0.0f;
                 g.isHidden = true;
 
-                // ÖØÖÃ¼ÓËÙ¶È³õÊ¼×´Ì¬£¬±£Ö¤Ã¿´ÎÒş²Ø¶¼ÊÇ´Ó0¼ÓËÙ
+                // é‡ç½®åŠ é€Ÿåº¦åˆå§‹çŠ¶æ€ï¼Œä¿è¯æ¯æ¬¡éšè—éƒ½æ˜¯ä»0åŠ é€Ÿ
                 g.velocityY = 0.0f;
                 g.velocityAlpha = 0.0f;
             }
@@ -405,19 +405,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrev, _In_ L
 
         g.lastMousePos = currMouse;
 
-        // ºËĞÄäÖÈ¾Ñ­»·
+        // æ ¸å¿ƒæ¸²æŸ“å¾ªç¯
         if (!IsPhysicsIdle()) {
             float dt = TimerGetDelta();
             UpdatePhysics(dt);
             DwmFlush();
         }
         else {
-            // È·±£×îºóÒ»´Î×´Ì¬±»Ó¦ÓÃ
+            // ç¡®ä¿æœ€åä¸€æ¬¡çŠ¶æ€è¢«åº”ç”¨
             if (g.currentY != g.targetY || g.currentAlpha != g.targetAlpha) {
-                UpdatePhysics(0.0f); // Ç¿ÖÆÍ¬²½
+                UpdatePhysics(0.0f); // å¼ºåˆ¶åŒæ­¥
             }
             Sleep(IDLE_CHECK_INTERVAL_MS);
-            TimerGetDelta(); // ÖØÖÃ¼ÆÊ±Æ÷·ÀÖ¹dtÌø±ä
+            TimerGetDelta(); // é‡ç½®è®¡æ—¶å™¨é˜²æ­¢dtè·³å˜
         }
     }
 
