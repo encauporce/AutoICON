@@ -1,0 +1,37 @@
+name: Sync to Gitee
+
+# 触发条件：什么时候开始同步？
+on:
+  push:               # 只要有代码推送
+  release:
+    types: [published] # 只要有新的 Release 发布
+
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+    steps:
+      # 第一步：把 GitHub 的代码和 Tag 镜像同步到 Gitee
+      - name: Mirror the GitHub repo to Gitee
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/encauporce          # 源端账户名
+          dst: gitee/encauporce           # 目的端账户名
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }} # 填入之前配置的 SSH 私钥
+          dst_token: ${{ secrets.GITEE_TOKEN }}     # 填入 Gitee 令牌
+          static_list: "AutoICON"          # 仓库名
+          force_update: true
+          debug: true
+
+  release-sync:
+    needs: repo-sync   # 等代码和 Tag 同步完再开始同步 Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' # 仅在有 Release 时执行此步骤
+    steps:
+      # 第二步：把 GitHub Release 里的 .exe 附件和说明搬到 Gitee
+      - name: Sync Release to Gitee
+        uses: abersheeran/gitee-release-action@v0.1.0
+        with:
+          gitee-username: encauporce
+          gitee-password: ${{ secrets.GITEE_PASSWORD }} # Gitee 密码
+          gitee-repo: encauporce/AutoICON
+          # 该插件会自动识别最新的 GitHub Release 并搬运到 Gitee
