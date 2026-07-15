@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL | 恩茶琉瓷 赞赏通道</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brandBlue: '#0010f5',
+                        darkCard: '#141414',
+                        darkBg: '#09090b',
+                        accentBlue: '#718df7',
+                        muteBlue: '#c3dafe',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            background-color: #0010f5;
+            font-family: 'Inter', sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Scanline scan effect for QR codes */
+        .qr-container {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .qr-container::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #0010f5, transparent);
+            top: 0;
+            left: 0;
+            animation: scan 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .qr-container:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        /* Subtle scan filter on image */
+        .qr-image {
+            filter: contrast(1.1) saturate(0.9) brightness(0.95);
+            transition: all 0.3s ease;
+        }
+        
+        .qr-container:hover .qr-image {
+            filter: none;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen lg:h-screen flex flex-col justify-between p-6 lg:p-10 select-none">
+
+    <!-- Top Minimal Label Header (No clickable links) -->
+    <header class="max-w-6xl mx-auto w-full flex justify-between items-center py-2 border-b border-white/10 text-xs font-mono tracking-[0.2em] opacity-80">
+        <span>PORTAL // SPONSOR</span>
+        <div class="flex space-x-1.5 items-center">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+            <span>ONLINE</span>
+        </div>
+        <span>ENCAUPORCE</span>
+    </header>
+
+    <!-- Main Content Grid (Center Dashboard) -->
+    <main class="max-w-6xl mx-auto w-full my-auto py-6 lg:py-0">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <!-- Column 1: Intro Text & Nous Girl Illustration -->
+            <div class="lg:col-span-4 flex flex-col justify-center space-y-6 text-left">
+                <div class="space-y-4">
+                    <span class="inline-block border border-white/20 px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-widest text-muteBlue">
+                        ● ACTIVE PROTOCOL
+                    </span>
+                    <h1 class="font-serif text-3xl lg:text-4xl font-light tracking-wide uppercase leading-tight text-white">
+                        与你一同成长的创作者
+                    </h1>
+                    <p class="text-xs lg:text-sm text-muteBlue leading-relaxed font-sans opacity-95">
+                        我是 <strong>恩茶琉瓷</strong>。如果您觉得我的开源工具、脚本或智能体设计对您有所启发，欢迎投喂支持。每一份能量注入都将转化为持续产出 Commit 的代码燃料。
+                    </p>
+                </div>
+
+                <!-- Cropped Official Headphones Girl Image (Compact display) -->
+                <div class="max-w-[300px] lg:max-w-[400px] opacity-90 hover:opacity-100 transition-opacity pointer-events-none select-none">
+                    <img src="nous_girl.png" alt="Nous Girl" class="w-full h-auto block" />
+                </div>
+            </div>
+
+            <!-- Column 2: Alipay Card (No buttons, clean data display) -->
+            <div class="lg:col-span-4 bg-darkCard border border-white/10 p-6 flex flex-col justify-between rounded-none relative shadow-2xl">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex justify-between items-center mb-6 font-mono text-[10px] tracking-wider text-neutral-400">
+                        <span>[ ALIPAY.PROFILE ]</span>
+                        <span class="text-brandBlue font-bold">● 支付宝</span>
+                    </div>
+
+                    <!-- Title / Price -->
+                    <div class="mb-5">
+                        <div class="font-serif text-3xl font-light text-[#90b0f9] tracking-tight">咖啡</div>
+                        <p class="text-[10px] font-mono text-neutral-500 mt-1 uppercase">Direct support via QR transfer</p>
+                    </div>
+
+                    <!-- QR Box -->
+                    <div class="flex justify-center mb-6">
+                        <div class="qr-container bg-white p-3 rounded-none border border-neutral-800 max-w-[190px]">
+                            <img src="alipay_qr.png" alt="Alipay QR" class="qr-image w-full h-auto block" />
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <ul class="space-y-2.5 text-[11px] font-mono text-neutral-300 border-t border-neutral-800/60 pt-5">
+                        <li class="flex items-start">
+                            <span class="text-brandBlue mr-1.5 font-bold select-none">•</span>
+                            <span>支付宝安全扫码通道</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-brandBlue mr-1.5 font-bold select-none">•</span>
+                            <span>实名：恩茶琉瓷 ( * * 敬 )</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-brandBlue mr-1.5 font-bold select-none">•</span>
+                            <span>支持付款留言，信息将被整理录入感谢名单</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Column 3: WeChat Card (No buttons) -->
+            <div class="lg:col-span-4 bg-darkCard border border-white/10 p-6 flex flex-col justify-between rounded-none relative shadow-2xl">
+                <div>
+                    <!-- Card Top Header -->
+                    <div class="flex justify-between items-center mb-6 font-mono text-[10px] tracking-wider text-neutral-400">
+                        <span>[ WECHAT.PROFILE ]</span>
+                        <span class="text-neutral-500">● 微信赞赏</span>
+                    </div>
+
+                    <!-- Title / Price -->
+                    <div class="mb-5">
+                        <div class="font-serif text-3xl font-light text-white tracking-tight">赞赏</div>
+                        <p class="text-[10px] font-mono text-neutral-500 mt-1 uppercase">Creator Appreciation</p>
+                    </div>
+
+                    <!-- QR Box -->
+                    <div class="flex justify-center mb-6">
+                        <div class="qr-container bg-white p-3 rounded-none border border-neutral-800 max-w-[190px]">
+                            <img src="wechat_qr.png" alt="WeChat QR" class="qr-image w-full h-auto block" />
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <ul class="space-y-2.5 text-[11px] font-mono text-neutral-300 border-t border-neutral-800/60 pt-5">
+                        <li class="flex items-start">
+                            <span class="text-neutral-500 mr-1.5 font-bold select-none">•</span>
+                            <span>微信赞赏码快捷免手续费通道</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-neutral-500 mr-1.5 font-bold select-none">•</span>
+                            <span>给恩茶琉瓷赞赏 - 快速建立创作者联系</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-neutral-500 mr-1.5 font-bold select-none">•</span>
+                            <span>可留言赞赏寄语，期待与您的技术交流</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom copyright / status footer -->
+    <footer class="max-w-6xl mx-auto w-full flex flex-col md:flex-row justify-between items-center py-2 border-t border-white/10 text-[10px] font-mono text-neutral-400 tracking-wider">
+        <span>PORTAL</span>
+        <span class="my-2 md:my-0">© 2026 恩茶琉瓷. ALL RIGHTS RESERVED.</span>
+        <span>MIT LICENSE • 2026</span>
+    </footer>
+
+</body>
+</html>
