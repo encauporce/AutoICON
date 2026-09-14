@@ -1,0 +1,63 @@
+﻿# Visual Studio 2015/2017/2019/2022 cache and options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.aps
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Intermediate files
+*.obj
+*.pdb
+*.ilk
+*.tlog
+*.idb
+*.ipdb
+*.iobj
+*.res
+*.lastbuildstate
+*.log
+*.tmp
+*.rsp
+
+# Packaging artifacts (MSIX / WAP)
+AppPackages/
+BundleArtifacts/
+*.msixupload
+*.msixbundle
+*.appxupload
+*.appxbundle
+*.msix
+*.appx
+*.cer
+*.pfx
+*Package*_Test/
+*.wapproj.nuget.*
+project.assets.json
+project.nuget.cache
+*.assets.cache
+
+# NuGet
+packages/
+*.nupkg
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
